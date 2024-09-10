@@ -10,8 +10,8 @@ class Cell {
     this.y = y;
     this.width = effect.cellWidth;
     this.height = effect.cellHeight;
-    this.slideX = Math.random() * 5;
-    this.slideY = Math.random() * 5;
+    this.slideX = 0;
+    this.slideY = 0;
   }
 
   draw(context) {
@@ -26,11 +26,21 @@ class Cell {
       this.width,
       this.height
     );
-    context.strokeRect(this.x, this.y, this.width, this.height);
+    // context.strokeRect(this.x, this.y, this.width, this.height);
   }
   update() {
-    this.slideX = Math.random() * 5;
-    this.slideY = Math.random() * 5;
+    const dx = this.effect.mouse.x - this.x;
+    const dy = this.effect.mouse.y - this.y;
+
+    const distance = Math.hypot(dx, dy);
+
+    if (distance > this.effect.mouse.radius) {
+      this.slideX = Math.random() * 10;
+      this.slideY = Math.random() * 10;
+    } else {
+      this.slideX = 0;
+      this.slideY = 0;
+    }
   }
 }
 
@@ -52,7 +62,6 @@ class Effect {
     this.canvas.addEventListener("mousemove", (e) => {
       this.mouse.x = e.offsetX;
       this.mouse.y = e.offsetY;
-      console.log(e, this.mouse);
     });
   }
   createGrid() {
