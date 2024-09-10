@@ -8,6 +8,10 @@ class Cell {
     this.effect = effect;
     this.x = x;
     this.y = y;
+    this.positionX = this.effect.width * 0.5;
+    this.positionY = this.effect.height * 0.5;
+    this.speedX;
+    this.speedY;
     this.width = effect.cellWidth;
     this.height = effect.cellHeight;
     this.slideX = 0;
@@ -17,6 +21,9 @@ class Cell {
     this.ease = 0.1;
     this.forceInhencer = 5;
     this.friction = 0.9;
+    this.randomize = Math.random() * 30 + 10;
+    this.start();
+    this.strokeOpacity = 0;
   }
 
   draw(context) {
@@ -26,14 +33,28 @@ class Cell {
       this.y + this.slideY,
       this.width,
       this.height,
-      this.x,
-      this.y,
+      this.positionX,
+      this.positionY,
       this.width,
       this.height
     );
-    // context.strokeRect(this.x, this.y, this.width, this.height);
+    context.save();
+    context.strokeStyle = `rgba(255,255,255, ${this.strokeOpacity})`;
+    context.strokeRect(this.positionX, this.positionY, this.width, this.height);
+    context.restore();
+  }
+  start() {
+    this.speedX = (this.x - this.positionX) / this.randomize;
+    this.speedY = (this.y - this.positionY) / this.randomize;
   }
   update() {
+    if (Math.abs(this.speedX) > 0.001 || Math.abs(this.speedY) > 0.001) {
+      this.speedX = (this.x - this.positionX) / this.randomize;
+      this.speedY = (this.y - this.positionY) / this.randomize;
+      this.positionX += this.speedX;
+      this.positionY += this.speedY;
+    }
+
     const dx = this.effect.mouse.x - this.x;
     const dy = this.effect.mouse.y - this.y;
 
@@ -56,8 +77,8 @@ class Effect {
     this.canvas = canvas;
     this.height = canvas.height;
     this.width = canvas.width;
-    this.cellWidth = this.width / 100;
-    this.cellHeight = this.height / 120;
+    this.cellWidth = this.width / 20;
+    this.cellHeight = this.height / 30;
     this.imageGrid = [];
     this.createGrid();
     this.image = document.getElementById("image-1");
@@ -87,23 +108,23 @@ class Effect {
       e.update();
       e.draw(context);
     });
-    context.save();
-    context.beginPath();
+    // context.save();
+    // context.beginPath();
 
-    // Draw the circle
-    context.arc(this.mouse.x, this.mouse.y, this.mouse.radius, 0, 2 * Math.PI);
-    context.fillStyle = `rgba(173, 216, 230, 0.05)`; // Light blue with opacity
-    context.fill();
-    // Outline the circle
-    // context.stroke();
-    context.restore();
+    // // Draw the circle
+    // context.arc(this.mouse.x, this.mouse.y, this.mouse.radius, 0, 2 * Math.PI);
+    // context.fillStyle = `rgba(173, 216, 230, 0.05)`; // Light blue with opacity
+    // context.fill();
+    // // Outline the circle
+    // // context.stroke();
+    // context.restore();
   }
 }
 
 const effect = new Effect(canvas);
 
 function animate() {
-  ctx.clearRect(0, 0, canvas.height, canvas.width);
+  //ctx.clearRect(0, 0, canvas.height, canvas.width);
   effect.render(ctx);
   requestAnimationFrame(animate);
 }
